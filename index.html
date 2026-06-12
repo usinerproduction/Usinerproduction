@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>UsinerProduction</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -509,6 +510,107 @@
       line-height: 1;
     }
 
+    /* ── GLOBE SECTION ── */
+    #globe { background: #07070a; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+
+    #globe-container {
+      width: 100%;
+      height: 600px;
+      position: relative;
+      margin: 3rem 0;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      background: linear-gradient(135deg, #0a0a12 0%, #1a0f1a 50%, #0f1a15 100%);
+    }
+
+    #canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .globe-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    .info-panel {
+      background: rgba(8, 8, 8, 0.92);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      padding: 1.8rem;
+      border-radius: 4px;
+      position: sticky;
+      top: 120px;
+    }
+
+    .info-panel-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.8rem;
+    }
+
+    .info-panel-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    .info-panel-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .info-btn {
+      display: inline-block;
+      padding: 0.7rem 1.8rem;
+      background: var(--gold);
+      color: #080808;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background 0.2s, transform 0.2s;
+      cursor: pointer;
+      border: none;
+      border-radius: 2px;
+    }
+
+    .info-btn:hover {
+      background: #fff;
+      transform: translateY(-2px);
+    }
+
+    .globe-instructions {
+      background: rgba(8, 8, 8, 0.92);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      padding: 1.2rem 1.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      line-height: 1.8;
+      margin-top: 1rem;
+    }
+
+    .instruction-item {
+      margin-bottom: 0.8rem;
+    }
+
+    .instruction-item strong {
+      color: var(--gold);
+    }
+
     /* ── FOOTER ── */
     footer {
       padding: 3rem 4rem;
@@ -571,6 +673,9 @@
       .contact-layout { gap: 3rem; }
       .services-grid { grid-template-columns: repeat(2, 1fr); }
       .portfolio-grid { grid-template-columns: repeat(3, 1fr); }
+      .globe-wrapper { grid-template-columns: 1fr; }
+      .info-panel { position: static; }
+      #globe-container { height: 500px; }
     }
 
     /* ── MOBILE ── */
@@ -607,6 +712,12 @@
       .portfolio-cat-label { font-size: 1.8rem; }
       .portfolio-cat-title { font-size: 1.3rem; }
       .portfolio-name { font-size: 1rem; }
+
+      /* Globe */
+      .globe-wrapper { grid-template-columns: 1fr; }
+      .info-panel { position: static; margin-top: 1.5rem; }
+      .globe-instructions { display: none; }
+      #globe-container { height: 350px; }
 
       /* Contact */
       .contact-layout { grid-template-columns: 1fr; gap: 2.5rem; }
@@ -646,7 +757,7 @@
     <ul class="nav-links" id="navLinks">
       <li><a href="#services" onclick="closeMenu()">Services</a></li>
       <li><a href="#portfolio" onclick="closeMenu()">Portfolio</a></li>
-      <li><a href="globe.html" onclick="closeMenu()" style="color: var(--gold);">Globe</a></li>
+      <li><a href="#globe" onclick="closeMenu()" style="color: var(--gold);">Globe</a></li>
     </ul>
     <button class="burger" id="burger" onclick="toggleMenu()" aria-label="Menu">
       <span></span><span></span><span></span>
@@ -831,6 +942,32 @@
     </div>
   </section>
 
+  <!-- GLOBE -->
+  <section id="globe" class="reveal">
+    <p class="section-label">Explorez le Monde</p>
+    <h2 class="section-title">DESTINATIONS</h2>
+    <div class="section-divider"></div>
+    
+    <div class="globe-wrapper">
+      <div id="globe-container">
+        <canvas id="canvas"></canvas>
+      </div>
+      <div>
+        <div class="info-panel" id="infoPanel">
+          <div class="info-panel-label">Destination</div>
+          <div class="info-panel-title" id="countryName">Vietnam</div>
+          <div class="info-panel-desc" id="countryDesc">Découvrez les paysages époustouflants et la culture vibrante du Vietnam à travers nos vidéos exclusives.</div>
+          <button class="info-btn" id="videoBtn" onclick="openCountryVideo('vietnam')">Voir la vidéo</button>
+        </div>
+        <div class="globe-instructions">
+          <div class="instruction-item"><strong>Souris:</strong> Rotation</div>
+          <div class="instruction-item"><strong>Scroll:</strong> Zoom</div>
+          <div class="instruction-item"><strong>Clic:</strong> Sélectionner</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- FOOTER -->
   <footer>
     <div class="footer-left">
@@ -851,6 +988,247 @@
   </footer>
 
   <script>
+    // ── CONFIGURATION GLOBE ──
+    const COUNTRIES = {
+      vietnam: {
+        name: 'Vietnam',
+        desc: 'Découvrez les paysages époustouflants et la culture vibrante du Vietnam à travers nos vidéos exclusives.',
+        videoId: 'grszAOYAauM',
+        coords: { lat: 16, lon: 106 }
+      },
+      thailand: {
+        name: 'Thaïlande',
+        desc: 'Temples dorés, plages paradisiaques et vie nocturne dynamique vous attendent en Thaïlande.',
+        videoId: null,
+        coords: { lat: 15, lon: 101 }
+      },
+      japan: {
+        name: 'Japon',
+        desc: 'Entre tradition et modernité, le Japon offre des expériences visuelles extraordinaires.',
+        videoId: null,
+        coords: { lat: 36.2, lon: 138.25 }
+      },
+      indonesia: {
+        name: 'Indonésie',
+        desc: 'Volcans majestueux, rizières verdoyantes et îles paradisiaques vous enchantent.',
+        videoId: null,
+        coords: { lat: -2, lon: 113 }
+      },
+      france: {
+        name: 'France',
+        desc: 'Notre pays, capturé dans toute sa beauté et son élégance.',
+        videoId: null,
+        coords: { lat: 46.2, lon: 2.2 }
+      }
+    };
+
+    let globeScene, globeCamera, globeRenderer, globe;
+    let isGlobeInitialized = false;
+
+    function initGlobe() {
+      if (isGlobeInitialized) return;
+      
+      const canvas = document.getElementById('canvas');
+      if (!canvas) return;
+
+      globeScene = new THREE.Scene();
+      globeCamera = new THREE.PerspectiveCamera(75, canvas.parentElement.clientWidth / canvas.parentElement.clientHeight, 0.1, 10000);
+      globeRenderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+      
+      globeRenderer.setSize(canvas.parentElement.clientWidth, canvas.parentElement.clientHeight);
+      globeRenderer.setPixelRatio(window.devicePixelRatio);
+      globeRenderer.setClearColor(0x0a0a12);
+      globeCamera.position.z = 2.5;
+
+      // ── CREATE GLOBE ──
+      const textureLoader = new THREE.TextureLoader();
+      const earthTexture = textureLoader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg');
+      
+      earthTexture.onError = () => {
+        const canvas2d = document.createElement('canvas');
+        canvas2d.width = 2048;
+        canvas2d.height = 1024;
+        const ctx = canvas2d.getContext('2d');
+        
+        ctx.fillStyle = '#1a4d2e';
+        ctx.fillRect(0, 0, 2048, 1024);
+        
+        ctx.fillStyle = '#2d6e4c';
+        for (let i = 0; i < 100; i++) {
+          ctx.fillRect(Math.random() * 2048, Math.random() * 1024, Math.random() * 100, Math.random() * 100);
+        }
+        ctx.fillStyle = '#4a90e2';
+        for (let i = 0; i < 50; i++) {
+          ctx.fillRect(Math.random() * 2048, Math.random() * 1024, Math.random() * 200, Math.random() * 150);
+        }
+        
+        const fallbackTexture = new THREE.CanvasTexture(canvas2d);
+        const geometry = new THREE.SphereGeometry(1, 64, 64);
+        const material = new THREE.MeshPhongMaterial({ map: fallbackTexture });
+        globe = new THREE.Mesh(geometry, material);
+        globeScene.add(globe);
+      };
+
+      const geometry = new THREE.SphereGeometry(1, 128, 128);
+      const material = new THREE.MeshPhongMaterial({
+        map: earthTexture,
+        emissive: 0x1a1a2e,
+        emissiveIntensity: 0.3,
+        shininess: 5
+      });
+      globe = new THREE.Mesh(geometry, material);
+      globeScene.add(globe);
+
+      // ── ÉCLAIRAGE ──
+      const light1 = new THREE.DirectionalLight(0xffffff, 0.8);
+      light1.position.set(5, 3, 5);
+      globeScene.add(light1);
+
+      const light2 = new THREE.DirectionalLight(0xaabbff, 0.4);
+      light2.position.set(-5, -3, -5);
+      globeScene.add(light2);
+
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+      globeScene.add(ambientLight);
+
+      // ── CONTRÔLES ──
+      let isMouseDown = false;
+      let mouseX = 0, mouseY = 0;
+      let targetRotationX = 0, targetRotationY = 0;
+      const countryPoints = {};
+
+      Object.keys(COUNTRIES).forEach(key => {
+        const country = COUNTRIES[key];
+        const lat = country.coords.lat * Math.PI / 180;
+        const lon = country.coords.lon * Math.PI / 180;
+
+        const x = Math.cos(lat) * Math.cos(lon);
+        const y = Math.sin(lat);
+        const z = Math.cos(lat) * Math.sin(lon);
+
+        countryPoints[key] = { x, y, z, ...country };
+      });
+
+      const raycaster = new THREE.Raycaster();
+      const mouse = new THREE.Vector2();
+
+      canvas.addEventListener('mousedown', (e) => {
+        isMouseDown = true;
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+      });
+
+      canvas.addEventListener('mousemove', (e) => {
+        if (isMouseDown) {
+          const deltaX = e.clientX - mouseX;
+          const deltaY = e.clientY - mouseY;
+          targetRotationY += deltaX * 0.003;
+          targetRotationX += deltaY * 0.003;
+          mouseX = e.clientX;
+          mouseY = e.clientY;
+        }
+      });
+
+      canvas.addEventListener('mouseup', () => {
+        isMouseDown = false;
+      });
+
+      canvas.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        globeCamera.position.z += e.deltaY * 0.001;
+        globeCamera.position.z = Math.max(1.5, Math.min(5, globeCamera.position.z));
+      }, { passive: false });
+
+      canvas.addEventListener('click', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, globeCamera);
+        const intersection = raycaster.ray.intersectSphere(new THREE.Sphere(new THREE.Vector3(0, 0, 0), 1));
+        
+        if (intersection) {
+          const closest = intersection[0];
+          let closestCountry = null;
+          let closestDist = Infinity;
+
+          Object.keys(countryPoints).forEach(key => {
+            const point = countryPoints[key];
+            const dist = new THREE.Vector3(point.x, point.y, point.z).distanceTo(closest);
+            if (dist < closestDist) {
+              closestDist = dist;
+              closestCountry = key;
+            }
+          });
+
+          if (closestCountry && closestDist < 0.2) {
+            selectCountry(closestCountry);
+          }
+        }
+      });
+
+      function selectCountry(key) {
+        const country = countryPoints[key];
+        
+        document.getElementById('countryName').textContent = country.name;
+        document.getElementById('countryDesc').textContent = country.desc;
+        
+        const videoBtn = document.getElementById('videoBtn');
+        if (country.videoId) {
+          videoBtn.style.opacity = '1';
+          videoBtn.style.pointerEvents = 'auto';
+          videoBtn.textContent = 'Voir la vidéo';
+          videoBtn.onclick = () => openCountryVideo(key);
+        } else {
+          videoBtn.style.opacity = '0.5';
+          videoBtn.style.pointerEvents = 'none';
+          videoBtn.textContent = 'Vidéo à venir';
+        }
+      }
+
+      function animateGlobe() {
+        requestAnimationFrame(animateGlobe);
+
+        if (globe) {
+          globe.rotation.x += (targetRotationX - globe.rotation.x) * 0.05;
+          globe.rotation.y += (targetRotationY - globe.rotation.y) * 0.05;
+          globe.rotation.z += 0.00005;
+        }
+
+        globeRenderer.render(globeScene, globeCamera);
+      }
+
+      window.addEventListener('resize', () => {
+        const width = canvas.parentElement.clientWidth;
+        const height = canvas.parentElement.clientHeight;
+        globeCamera.aspect = width / height;
+        globeCamera.updateProjectionMatrix();
+        globeRenderer.setSize(width, height);
+      });
+
+      selectCountry('vietnam');
+      animateGlobe();
+      isGlobeInitialized = true;
+    }
+
+    window.openCountryVideo = function(country) {
+      const videoId = COUNTRIES[country]?.videoId;
+      if (videoId) {
+        window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank');
+      }
+    };
+
+    // ── INIT AU SCROLL ──
+    const globeSection = document.getElementById('globe');
+    const globeObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !isGlobeInitialized) {
+          setTimeout(initGlobe, 100);
+        }
+      });
+    }, { threshold: 0.1 });
+    if (globeSection) globeObserver.observe(globeSection);
+
     // Nav scroll
     const navbar = document.getElementById('navbar');
     window.addEventListener('scroll', () => {
